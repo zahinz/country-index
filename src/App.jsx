@@ -1,28 +1,21 @@
 import { useState } from "react";
+import { getAllCountryData, getCountryData } from "./utils/api";
 
 function App() {
   // pending, loading, success, error
   const [fetchAllCountryState, setFetchAllCountryState] = useState("pending");
   const [fetchedData, setFetchedData] = useState(undefined);
 
-  const handleFetchData = () => {
-    setFetchAllCountryState("loading");
-    fetch(
-      "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates%2Bcities.json"
-    )
-      .then((res) => {
-        console.log(res);
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setFetchedData(data);
-        setFetchAllCountryState("success");
-      })
-      .catch((error) => {
-        console.log(error);
-        setFetchAllCountryState("error");
-      });
+  const handleFetchData = async () => {
+    try {
+      setFetchAllCountryState("loading");
+      const data = await getAllCountryData();
+      setFetchedData(data);
+      setFetchAllCountryState("success");
+    } catch (error) {
+      console.log(error);
+      setFetchAllCountryState("error");
+    }
   };
 
   return (
@@ -75,21 +68,16 @@ function App() {
 const Row = ({ country, index }) => {
   const [fetchCountryState, setFetchCountryState] = useState("pending");
   const [fetchedData, setFetchData] = useState(undefined);
-  const handleKnowMore = (country) => {
-    // console log country name
-    console.log(country);
-    setFetchCountryState("loading");
-    fetch(`https://restcountries.com/v3.1/name/${country}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const [country] = data;
-        console.log(country);
-        setFetchData(country);
-        setFetchCountryState("success");
-      })
-      .catch((error) => {
-        setFetchCountryState("error");
-      });
+  const handleKnowMore = async (country) => {
+    try {
+      setFetchCountryState("loading");
+      const data = await getCountryData(country);
+      setFetchData(data);
+      setFetchCountryState("success");
+    } catch (error) {
+      console.log(error);
+      setFetchCountryState("error");
+    }
   };
 
   return (
